@@ -205,8 +205,9 @@ class Client
             $files = array($files);
         }
 
-        Validator::assertValidFiles($files, 'pdf');
-        Validator::assertValidRecipients($recipients);
+        if (isset($recipients['email'])) {
+            $recipients = array($recipients);
+        }
 
         $safeParams = Resolver::resolveCreateSignatureRequestOptions($params);
 
@@ -315,8 +316,6 @@ class Client
      */
     public function updateBrandingLogo($brandingId, $filePath)
     {
-        Validator::assertValidFiles($filePath, array('png', 'jpg', 'gif', 'bmp'));
-
         return $this->doRequest(
             RequestInterface::METHOD_PUT,
             "$this->url/v2/brandings/$brandingId/logo.json",
@@ -335,8 +334,6 @@ class Client
      */
     public function updateBrandingTemplate($brandingId, $template, $filePath)
     {
-        Validator::assertValidFiles($filePath, 'html');
-
         return $this->doRequest(
             RequestInterface::METHOD_PUT,
             "$this->url/v2/brandings/$brandingId/emails/$template.json",
