@@ -114,7 +114,7 @@ class Resolver
             ->setDefaults(array(
                 'subject' => null,
                 'body' => null,
-                'in_person' => false,
+                'in_person_sign' => false,
                 'sequential' => false,
                 'photo' => false,
                 'mandatory_pages' => array(),
@@ -123,7 +123,7 @@ class Resolver
             ->setAllowedTypes(array(
                 'subject' => array('null', 'string'),
                 'body' => array('null', 'string'),
-                'in_person' => 'bool',
+                'in_person_sign' => 'bool',
                 'sequential' => 'bool',
                 'photo' => 'bool',
                 'mandatory_pages' => array('null', 'array'),

@@ -149,7 +149,7 @@ class SignaturitTest extends \PHPUnit_Framework_TestCase
                 array(
                     'subject' => 'Request email subject',
                     'body' => 'Request email body',
-                    'in_person' => true,
+                    'in_person_sign' => true,
                     'sequential' => false,
                     'photo' => false,
                     'mandatory_pages' => array(1, 2, 3),
