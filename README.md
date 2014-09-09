@@ -139,6 +139,14 @@ $credentials = array(
 $response = client->setDocumentStorage('sftp', $credentials);
 ```
 
+### Revert to default document storage
+
+If you ever want to store your files in Signaturit's servers just run this method:
+
+```php
+$client->revertToDefaultDocumentStorage();
+```
+
 ## Branding
 
 ### Get brandings
