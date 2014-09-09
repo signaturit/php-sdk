@@ -86,6 +86,17 @@ class Client
     }
 
     /**
+     * @return array
+     */
+    public function revertToDefaultDocumentStorage()
+    {
+        return $this->doRequest(
+            RequestInterface::METHOD_DELETE,
+            "$this->url/v2/account/storage.json"
+        );
+    }
+
+    /**
      * @param string $signatureId
      *
      * @return array
