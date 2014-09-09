@@ -73,9 +73,9 @@ class Client
             /** @var Response $response */
             $response = $this->buzz
                 ->submit(
-                    "$this->url/v2/account.json",
+                    "$this->url/v2/account/storage.json",
                     $safeParams,
-                    RequestInterface::METHOD_PATCH,
+                    RequestInterface::METHOD_POST,
                     $this->authHeader
                 );
         } catch (ClientException $e) {
