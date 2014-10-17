@@ -2,11 +2,8 @@
 
 namespace Signaturit;
 
-use Buzz\Browser;
-use Buzz\Exception\ClientException;
-use Buzz\Message\Form\FormUpload;
-use Buzz\Message\RequestInterface;
-use Buzz\Message\Response;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Post\PostFile;
 
 class Client
 {
@@ -21,14 +18,14 @@ class Client
     const SANDBOX_BASE_URL = 'http://api.sandbox.signaturit.com';
 
     /**
-     * @var array
+     * @var string
      */
-    private $authHeader;
+    private $accessToken;
 
     /**
-     * @var Browser
+     * @var Client
      */
-    private $buzz;
+    private $client;
 
     /**
      * @var string
@@ -37,13 +34,13 @@ class Client
 
     /**
      * @param string $accessToken
-     * @param bool $production
+     * @param bool   $production
      */
     public function __construct($accessToken, $production = false)
     {
-        $this->authHeader = array('Authorization' => "Bearer $accessToken");
+        $this->accessToken = $accessToken;
 
-        $this->buzz = new Browser();
+        $this->client = new GuzzleClient();
 
         $this->url = $production ? self::PROD_BASE_URL : self::SANDBOX_BASE_URL;
     }
@@ -53,10 +50,7 @@ class Client
      */
     public function getAccount()
     {
-        return $this->doRequest(
-            RequestInterface::METHOD_GET,
-            "$this->url/v2/account.json"
-        );
+        return $this->request('GET', 'v2/account.json')->json();
     }
 
     /**
@@ -67,22 +61,9 @@ class Client
      */
     public function setDocumentStorage($type, array $params)
     {
-        $safeParams = Resolver::resolveDocumentStorageOptions($type, $params);
+        $params['type'] = $type;
 
-        try {
-            /** @var Response $response */
-            $response = $this->buzz
-                ->submit(
-                    "$this->url/v2/account/storage.json",
-                    $safeParams,
-                    RequestInterface::METHOD_POST,
-                    $this->authHeader
-                );
-        } catch (ClientException $e) {
-            return $this->parseClientException($e);
-        }
-
-        return $this->parseResponse($response);
+        return $this->request('PATCH', 'v2/account.json', $params)->json();
     }
 
     /**
@@ -90,10 +71,7 @@ class Client
      */
     public function revertToDefaultDocumentStorage()
     {
-        return $this->doRequest(
-            RequestInterface::METHOD_DELETE,
-            "$this->url/v2/account/storage.json"
-        );
+        return $this->request('DELETE', 'v2/account/storage.json');
     }
 
     /**
@@ -103,10 +81,7 @@ class Client
      */
     public function getSignature($signatureId)
     {
-        return $this->doRequest(
-            RequestInterface::METHOD_GET,
-            "$this->url/v2/signs/$signatureId.json"
-        );
+        return $this->request('GET', "v2/signs/$signatureId.json")->json();
     }
 
     /**
@@ -119,14 +94,22 @@ class Client
      */
     public function getSignatures($limit = 100, $offset = 0, $status = null, \DateTime $since = null)
     {
-        $url = "$this->url/v2/signs.json?limit=$limit&offset=$offset";
-        $url = $status ? "$url&status=$status" : $url;
-        $url = $since ? "$url&since={$since->format("")}" : $url;
+        $params = [
+            'limit' => $limit,
+            'offset' => $offset
+        ];
 
-        return $this->doRequest(
-            RequestInterface::METHOD_GET,
-            $url
-        );
+        if ($status) {
+            $params['status'] = $status;
+        }
+
+        if ($since) {
+            $params['since'] = $since;
+        }
+
+        $path = 'v2/signs.json?'.http_build_query($params);
+
+        return $this->request('GET', $path)->json();
     }
 
     /**
@@ -134,10 +117,7 @@ class Client
      */
     public function countSignatures()
     {
-        return $this->doRequest(
-            RequestInterface::METHOD_GET,
-            "$this->url/v2/documents/count.json"
-        );
+        return $this->request('GET', 'v2/documents/count.json')->json()['count'];
     }
 
     /**
@@ -148,10 +128,7 @@ class Client
      */
     public function getSignatureDocument($signatureId, $documentId)
     {
-        return $this->doRequest(
-            RequestInterface::METHOD_GET,
-            "$this->url/v2/signs/$signatureId/documents/$documentId.json"
-        );
+        return $this->request('GET', "v2/signs/$signatureId/documents/$documentId.json")->json();
     }
 
     /**
@@ -161,10 +138,7 @@ class Client
      */
     public function getSignatureDocuments($signatureId)
     {
-        return $this->doRequest(
-            RequestInterface::METHOD_GET,
-            "$this->url/v2/signs/$signatureId/documents.json"
-        );
+        return $this->request('GET', "v2/signs/$signatureId/documents.json")->json();
     }
 
     /**
@@ -174,14 +148,10 @@ class Client
      */
     public function getAuditTrail($signatureId, $documentId, $path)
     {
-        /** @var Response $response */
-        $response = $this->buzz
-            ->get(
-                "$this->url/v2/signs/$signatureId/documents/$documentId/download/doc/proof",
-                $this->authHeader
-            );
-
-        file_put_contents($path, $response->getContent());
+        file_put_contents(
+            $path,
+            $this->request('GET', "v2/signs/$signatureId/documents/$documentId/download/doc_proof")->getBody()
+        );
     }
 
     /**
@@ -191,56 +161,34 @@ class Client
      */
     public function getSignedDocument($signatureId, $documentId, $path)
     {
-        /** @var Response $response */
-        $response = $this->buzz
-            ->get(
-                "$this->url/v2/signs/$signatureId/documents/$documentId/download/signed",
-                $this->authHeader
-            );
-
-        file_put_contents($path, $response->getContent());
+        file_put_contents(
+            $path,
+            $this->request('GET', "v2/signs/$signatureId/documents/$documentId/download/signed")->getBody()
+        );
     }
 
     /**
      * @param string|string[] $files
-     * @param string[] $recipients
-     * @param array $params
+     * @param string|string[] $recipients
+     * @param array           $params
      *
      * @return array
-     *
-     * @throws \RuntimeException
      */
-    public function createSignatureRequest($files, array $recipients, array $params = array())
+    public function createSignatureRequest($files, $recipients, array $params = [])
     {
-        if (!is_array($files)) {
-            $files = array($files);
+        $recipients = (array) $recipients;
+        $files      = (array) $files;
+
+        $params['recipients'] = isset($recipients['email']) ? [$recipients] : $recipients;
+
+        foreach ($files as $i => $path) {
+            $params["files[$i]"] =  new PostFile(
+                "files[$i]",
+                fopen($path, 'r')
+            );
         }
 
-        if (isset($recipients['email'])) {
-            $recipients = array($recipients);
-        }
-
-        $safeParams = Resolver::resolveCreateSignatureRequestOptions($params);
-
-        for ($i = 0; $i < count($files); $i++) {
-            $safeParams['files'][$i] = new FormUpload($files[$i], 'application/pdf');
-        }
-        $safeParams['recipients'] = $recipients;
-
-        try {
-            /** @var Response $response */
-            $response = $this->buzz
-                ->submit(
-                    "$this->url/v2/signs.json",
-                    $safeParams,
-                    RequestInterface::METHOD_POST,
-                    $this->authHeader
-                );
-        } catch (ClientException $e) {
-            return $this->parseClientException($e);
-        }
-
-        return $this->parseResponse($response);
+        return $this->request('POST', 'v2/signs.json', $params)->json();
     }
 
     /**
@@ -250,10 +198,7 @@ class Client
      */
     public function getBranding($brandingId)
     {
-        return $this->doRequest(
-            RequestInterface::METHOD_GET,
-            "$this->url/v2/brandings/$brandingId.json"
-        );
+        return $this->request('GET', "v2/brandings/$brandingId.json")->json();
     }
 
     /**
@@ -261,10 +206,7 @@ class Client
      */
     public function getBrandings()
     {
-        return $this->doRequest(
-            RequestInterface::METHOD_GET,
-            "$this->url/v2/brandings.json"
-        );
+        return $this->request('GET', "v2/brandings.json")->json();
     }
 
     /**
@@ -272,23 +214,9 @@ class Client
      *
      * @return array
      */
-    public function createBranding(array $params = array())
+    public function createBranding(array $params = [])
     {
-        $safeParams = Resolver::resolveBrandingOptions($params);
-
-        try {
-            /** @var Response $response */
-            $response = $this->buzz->submit(
-                "$this->url/v2/brandings.json",
-                $safeParams,
-                RequestInterface::METHOD_POST,
-                $this->authHeader
-            );
-        } catch (ClientException $e) {
-            return $this->parseClientException($e);
-        }
-
-        return $this->parseResponse($response);
+        return $this->request('POST', "v2/brandings.json", $params)->json();
     }
 
     /**
@@ -299,39 +227,20 @@ class Client
      */
     public function updateBranding($brandingId, array $params)
     {
-        $safeParams = Resolver::resolveBrandingOptions($params);
-
-        try {
-            /** @var Response $response */
-            $response = $this->buzz
-                ->submit(
-                    "$this->url/v2/brandings/$brandingId.json",
-                    $safeParams,
-                    RequestInterface::METHOD_PATCH,
-                    $this->authHeader
-                );
-        } catch (ClientException $e) {
-            return $this->parseClientException($e);
-        }
-
-        return $this->parseResponse($response);
+        return $this->request('PATCH', "v2/brandings/$brandingId.json", $params)->json();
     }
 
     /**
      * @param string $brandingId
      * @param string $filePath
      *
-     * @return bool
-     *
-     * @throws \RuntimeException
+     * @return array
      */
     public function updateBrandingLogo($brandingId, $filePath)
     {
-        return $this->doRequest(
-            RequestInterface::METHOD_PUT,
-            "$this->url/v2/brandings/$brandingId/logo.json",
-            file_get_contents($filePath)
-        );
+        $data = file_get_contents($filePath);
+
+        return $this->request('PUT', "v2/brandings/$brandingId/logo.json", $data)->json();
     }
 
     /**
@@ -340,16 +249,12 @@ class Client
      * @param string $filePath
      *
      * @return array
-     *
-     * @throws \RuntimeException
      */
     public function updateBrandingTemplate($brandingId, $template, $filePath)
     {
-        return $this->doRequest(
-            RequestInterface::METHOD_PUT,
-            "$this->url/v2/brandings/$brandingId/emails/$template.json",
-            file_get_contents($filePath)
-        );
+        $data = file_get_contents($filePath);
+
+        return $this->request('PUT', "v2/brandings/$brandingId/emails/$template.json", $data)->json();
     }
 
     /**
@@ -357,62 +262,25 @@ class Client
      */
     public function getTemplates()
     {
-        return $this->doRequest(
-            RequestInterface::METHOD_GET,
-            "$this->url/v2/templates.json"
-        );
+        return $this->request('GET', 'v2/templates.json')->json();
     }
 
     /**
      * @param string $method
-     * @param string $url
-     * @param string $content
+     * @param string $path
+     * @param array  $params
      *
-     * @return array
+     * @return Response
      */
-    protected function doRequest($method, $url, $content = '')
+    protected function request($method, $path, $params = [])
     {
-        try {
-            /** @var Response $response */
-            $response = $this->buzz->call($url, $method, $this->authHeader, $content);
-        } catch (ClientException $e) {
-            return $this->parseClientException($e);
-        }
+        $data['headers'] = ['Authorization' => "Bearer $this->accessToken"];
+        $data['body']    = $params;
 
-        return $this->parseResponse($response);
-    }
+        $request = $this->client->createRequest($method, "$this->url/$path", $data);
 
-    /**
-     * @param Response $response
-     *
-     * @return array
-     */
-    protected function parseResponse(Response $response)
-    {
-        switch ($response->getStatusCode()) {
-            case 200:
-                return json_decode($response->getContent(), true);
+        $response = $this->client->send($request);
 
-            case 204:
-                return true;
-
-            default:
-                return array(
-                    'error' => array(
-                        'status' => $response->getStatusCode(),
-                        'message' => $response->getReasonPhrase()
-                    )
-                );
-        }
-    }
-
-    /**
-     * @param ClientException $e
-     *
-     * @return array
-     */
-    protected function parseClientException(ClientException $e)
-    {
-        return array('exception' => $e->getMessage());
+        return $response;
     }
 }
