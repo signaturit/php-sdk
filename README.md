@@ -101,7 +101,7 @@ $response = $client->createSignatureRequest($filePath, $recipients, $options);
 Cancel a signature request.
 
 ```
-client.cancelSignatureRequest('a066298d-2877-11e4-b641-080027ea3a6e');
+$response = client.cancelSignatureRequest('a066298d-2877-11e4-b641-080027ea3a6e');
 ```
 
 ### Get audit trail
