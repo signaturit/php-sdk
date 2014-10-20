@@ -96,6 +96,14 @@ $options = array('subject' => 'Receipt no. 250', 'body' => 'Please sign the rece
 $response = $client->createSignatureRequest($filePath, $recipients, $options);
 ```
 
+### Cancel signature request
+
+Cancel a signature request.
+
+```
+client.cancelSignatureRequest('a066298d-2877-11e4-b641-080027ea3a6e');
+```
+
 ### Get audit trail
 
 Get the audit trail of a signature request document and save it locally.

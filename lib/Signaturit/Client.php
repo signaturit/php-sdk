@@ -192,7 +192,17 @@ class Client
     }
 
     /**
-     * @param $brandingId
+     * @param string $signatureId
+     *
+     * @return array
+     */
+    public function cancelSignatureRequest($signatureId)
+    {
+        return $this->request('PATCH', "v2/signs/$signatureId/cancel.json")->json();
+    }
+
+    /**
+     * @param string $brandingId
      *
      * @return array
      */
