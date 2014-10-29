@@ -284,7 +284,7 @@ class Client
      */
     protected function request($method, $path, $params = [])
     {
-        $data['headers'] = ['Authorization' => "Bearer $this->accessToken"];
+        $data['headers'] = ['Authorization' => "Bearer $this->accessToken", 'user-agent' => 'php-sdk.0.0.4'];
         $data['body']    = $params;
 
         $request = $this->client->createRequest($method, "$this->url/$path", $data);
