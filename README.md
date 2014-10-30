@@ -104,6 +104,14 @@ Cancel a signature request.
 $response = client.cancelSignatureRequest('a066298d-2877-11e4-b641-080027ea3a6e');
 ```
 
+### Send reminder
+
+Send a reminder email.
+
+```
+$response = client.sendReminder('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a1eb-2877-11e4-b641-080027ea3a6e');
+```
+
 ### Get audit trail
 
 Get the audit trail of a signature request document and save it locally.

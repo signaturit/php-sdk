@@ -202,6 +202,17 @@ class Client
     }
 
     /**
+     * @param string $signatureId
+     * @param $documentId
+     *
+     * @return array
+     */
+    public function sendReminder($signatureId, $documentId)
+    {
+        return $this->request('POST', "v2/signs/$signatureId/documents/$documentId/reminder.json")->json();
+    }
+
+    /**
      * @param string $brandingId
      *
      * @return array
@@ -284,7 +295,7 @@ class Client
      */
     protected function request($method, $path, $params = [])
     {
-        $data['headers'] = ['Authorization' => "Bearer $this->accessToken", 'user-agent' => 'php-sdk.0.0.4'];
+        $data['headers'] = ['Authorization' => "Bearer $this->accessToken", 'user-agent' => 'signaturit-php-sdk 0.0.4'];
         $data['body']    = $params;
 
         $request = $this->client->createRequest($method, "$this->url/$path", $data);
