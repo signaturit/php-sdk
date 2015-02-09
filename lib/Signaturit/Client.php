@@ -89,11 +89,16 @@ class Client
      * @param int $offset
      * @param int $status
      * @param \DateTime $since
-     *
+     * @param array $data
      * @return array
      */
-    public function getSignatures($limit = 100, $offset = 0, $status = null, \DateTime $since = null)
-    {
+    public function getSignatures(
+        $limit = 100,
+        $offset = 0,
+        $status = null,
+        \DateTime $since = null,
+        $data = null
+    ) {
         $params = [
             'limit' => $limit,
             'offset' => $offset
@@ -107,17 +112,45 @@ class Client
             $params['since'] = $since;
         }
 
+        if ($data) {
+            foreach ($data as $key => $value) {
+                $params['data.'.$key] = $value;
+            }
+        }
+
         $path = 'v2/signs.json?'.http_build_query($params);
 
         return $this->request('GET', $path)->json();
     }
 
     /**
+     * @param null $status
+     * @param \DateTime $since
+     * @param null $data
+     *
      * @return int
      */
-    public function countSignatures()
+    public function countSignatures($status = null, \DateTime $since = null, $data = null)
     {
-        return $this->request('GET', 'v2/documents/count.json')->json()['count'];
+        $params = [];
+
+        if ($status) {
+            $params['status'] = $status;
+        }
+
+        if ($since) {
+            $params['since'] = $since;
+        }
+
+        if ($data) {
+            foreach ($data as $key => $value) {
+                $params['data.'.$key] = $value;
+            }
+        }
+
+        $path = 'v2/signs/count.json?'.http_build_query($params);
+
+        return $this->request('GET', $path)->json()['count'];
     }
 
     /**

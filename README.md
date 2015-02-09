@@ -52,6 +52,12 @@ $response = $client->getSignatures();
 $response = $client->getSignatures(50);
 ```
 
+##### Getting signatures with custom field "crm_id"
+
+```php
+$response = $client->getSignatures(100, 0, null, null, ['crm_id' => 'CUSTOM_ID'])
+```
+
 ### Count signature requests
 
 Count your signature requests.
@@ -96,11 +102,21 @@ $options = array('subject' => 'Receipt no. 250', 'body' => 'Please sign the rece
 $response = $client->createSignatureRequest($filePath, $recipients, $options);
 ```
 
+You can add custom info in your requests
+
+```php
+$filePath = '/documents/contracts/receipt250.pdf';
+$recipients = array('email' => 'john.doe@example.com', 'fullname' => 'John Doe');
+$options = array('subject' => 'Receipt no. 250', 'body' => 'Please sign the receipt', 'data' => ['crm_id' => '45673']);
+
+$response = $client->createSignatureRequest($filePath, $recipients, $options);
+```
+
 ### Cancel signature request
 
 Cancel a signature request.
 
-```
+```php
 $response = $client->cancelSignatureRequest('a066298d-2877-11e4-b641-080027ea3a6e');
 ```
 
@@ -108,7 +124,7 @@ $response = $client->cancelSignatureRequest('a066298d-2877-11e4-b641-080027ea3a6
 
 Send a reminder email.
 
-```
+```php
 $response = $client->sendReminder('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a1eb-2877-11e4-b641-080027ea3a6e');
 ```
 
