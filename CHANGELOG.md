@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+* 0.0.5 (2015-02-10)
+ * add extra information with the data parameter in create signature request
+ * allow to set conditions in count signatures request
+
+* 0.0.4 (2014-10-20)
+ * added cancel signature request
+
 * 0.0.3 (2014-10-17)
 
  * moved from buzz to guzzle
