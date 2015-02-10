@@ -1,8 +1,4 @@
-.idea/
-.vagrant/
-bin/
-composer.lock
-vendor/
 .DS_Store
-Vagrantfile
-vagrant.sh
+composer.lock
+bin/
+vendor/
