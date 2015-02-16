@@ -116,7 +116,7 @@ You can send templates with the fields filled
 ```php
 
 $recipients = array('email' => 'john.doe@example.com', 'fullname' => 'John Doe');
-$options = array('subject' => 'Receipt no. 250', 'body' => 'Please sign the receipt', 'templates' => array('template_name'), data' => ['widget_id' => 'default value']);
+$options = array('subject' => 'Receipt no. 250', 'body' => 'Please sign the receipt', 'templates' => array('template_name'), 'data' => ['widget_id' => 'default value']);
 
 $response = $client->createSignatureRequest(array(), $recipients, $options);
 ```
