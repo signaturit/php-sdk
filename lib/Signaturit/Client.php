@@ -3,6 +3,7 @@
 namespace Signaturit;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Message\Response;
 use GuzzleHttp\Post\PostFile;
 
 class Client
@@ -90,6 +91,8 @@ class Client
      * @param int $status
      * @param \DateTime $since
      * @param array $data
+     * @param array $ids
+     *
      * @return array
      */
     public function getSignatures(
@@ -97,7 +100,8 @@ class Client
         $offset = 0,
         $status = null,
         \DateTime $since = null,
-        $data = null
+        $data = null,
+        $ids = null
     ) {
         $params = [
             'limit' => $limit,
@@ -118,6 +122,10 @@ class Client
             }
         }
 
+        if ($ids) {
+            $params['id'] = implode(",", $ids);
+        }
+
         $path = 'v2/signs.json?'.http_build_query($params);
 
         return $this->request('GET', $path)->json();
@@ -126,11 +134,12 @@ class Client
     /**
      * @param null $status
      * @param \DateTime $since
-     * @param null $data
+     * @param array $data
+     * @param array $ids
      *
      * @return int
      */
-    public function countSignatures($status = null, \DateTime $since = null, $data = null)
+    public function countSignatures($status = null, \DateTime $since = null, $data = null, $ids = null)
     {
         $params = [];
 
@@ -146,6 +155,10 @@ class Client
             foreach ($data as $key => $value) {
                 $params['data.'.$key] = $value;
             }
+        }
+
+        if ($ids) {
+            $params['id'] = implode(",", $ids);
         }
 
         $path = 'v2/signs/count.json?'.http_build_query($params);
