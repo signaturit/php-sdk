@@ -123,7 +123,7 @@ class Client
         }
 
         if ($ids) {
-            $params['id'] = implode(",", $ids);
+            $params['ids'] = implode(",", $ids);
         }
 
         $path = 'v2/signs.json?'.http_build_query($params);
@@ -158,7 +158,7 @@ class Client
         }
 
         if ($ids) {
-            $params['id'] = implode(",", $ids);
+            $params['ids'] = implode(",", $ids);
         }
 
         $path = 'v2/signs/count.json?'.http_build_query($params);
