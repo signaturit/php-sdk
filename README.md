@@ -55,7 +55,7 @@ $response = $client->getSignatures(50);
 ##### Getting signatures with custom field "crm_id"
 
 ```php
-$response = $client->getSignatures(100, 0, null, null, ['crm_id' => 'CUSTOM_ID'])
+$response = $client->getSignatures(100, 0, ['data' => 'crm_id' => 'CUSTOM_ID']])
 ```
 
 ### Count signature requests
@@ -99,7 +99,7 @@ $filePath = '/documents/contracts/receipt250.pdf';
 $recipients = array('email' => 'john.doe@example.com', 'fullname' => 'John Doe');
 $options = array('subject' => 'Receipt no. 250', 'body' => 'Please sign the receipt');
 
-$response = $client->createSignatureRequest($filePath, $recipients, $options);
+$response = $client->createSignature($filePath, $recipients, $options);
 ```
 
 You can add custom info in your requests
@@ -109,7 +109,7 @@ $filePath = '/documents/contracts/receipt250.pdf';
 $recipients = array('email' => 'john.doe@example.com', 'fullname' => 'John Doe');
 $options = array('subject' => 'Receipt no. 250', 'body' => 'Please sign the receipt', 'data' => ['crm_id' => '45673']);
 
-$response = $client->createSignatureRequest($filePath, $recipients, $options);
+$response = $client->createSignature($filePath, $recipients, $options);
 ```
 
 You can send templates with the fields filled
@@ -118,14 +118,14 @@ You can send templates with the fields filled
 $recipients = array('email' => 'john.doe@example.com', 'fullname' => 'John Doe');
 $options = array('subject' => 'Receipt no. 250', 'body' => 'Please sign the receipt', 'templates' => array('template_name'), 'data' => ['widget_id' => 'default value']);
 
-$response = $client->createSignatureRequest(array(), $recipients, $options);
+$response = $client->createSignature(array(), $recipients, $options);
 ```
 ### Cancel signature request
 
 Cancel a signature request.
 
 ```php
-$response = $client->cancelSignatureRequest('a066298d-2877-11e4-b641-080027ea3a6e');
+$response = $client->cancelSignature('a066298d-2877-11e4-b641-080027ea3a6e');
 ```
 
 ### Send reminder
@@ -133,7 +133,7 @@ $response = $client->cancelSignatureRequest('a066298d-2877-11e4-b641-080027ea3a6
 Send a reminder email.
 
 ```php
-$response = $client->sendReminder('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a1eb-2877-11e4-b641-080027ea3a6e');
+$response = $client->sendSignatureReminder('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a1eb-2877-11e4-b641-080027ea3a6e');
 ```
 
 ### Get audit trail
@@ -141,7 +141,7 @@ $response = $client->sendReminder('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a
 Get the audit trail of a signature request document and save it locally.
 
 ```php
-$response = $client->getAuditTrail('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a1eb-2877-11e4-b641-080027ea3a6e','/local/path/for/doc.pdf');
+$response = $client->downloadAuditTrail('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a1eb-2877-11e4-b641-080027ea3a6e','/local/path/for/doc.pdf');
 ```
 
 ### Get signed document
@@ -149,7 +149,7 @@ $response = $client->getAuditTrail('a066298d-2877-11e4-b641-080027ea3a6e', 'd474
 Get the signed document of a signature request document and save it locally.
 
 ```php
-$response = $client->getSignedDocument('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a1eb-2877-11e4-b641-080027ea3a6e','/local/path/for/doc.pdf');
+$response = $client->downloadSignedDocument('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a1eb-2877-11e4-b641-080027ea3a6e','/local/path/for/doc.pdf');
 ```
 
 ## Account
@@ -160,31 +160,6 @@ Retrieve the information of your account.
 
 ```php
 $response = $client->getAccount();
-```
-
-### Set document storage
-
-Set your own storage credentials, to store a copy of the documents. You can get all the info of credential types [here](http://docs.signaturit.com/api/#account_set_credentials).
-
-```php
-$credentials = array(
-    'user' => 'remote',
-    'port' => 22,
-    'dir' => '/home/remote/storage',
-    'host' => '1.2.3.4',
-    'auth_method' => 'PASS',
-    'password' => 'changeit'
-);
-
-$response = client->setDocumentStorage('sftp', $credentials);
-```
-
-### Revert to default document storage
-
-If you ever want to store your files in Signaturit's servers just run this method:
-
-```php
-$client->revertToDefaultDocumentStorage();
 ```
 
 ## Branding
@@ -239,14 +214,14 @@ $filePath = '/logos/new_logo.png';
 $response = $client->updateBrandingLogo('6472aad7-2877-11e4-b641-080027ea3a6e', $filePath);
 ```
 
-### Update branding template
+### Update branding email
 
-Change a template. Learn more about the templates [here](http://docs.signaturit.com/api/#put_template_branding).
+Change a email. Learn more about the emails [here](http://docs.signaturit.com/api/#put_template_branding).
 
 ```php
 $filePath = '/templates/sign_request_template.html';
 
-$response = $client->updateBrandingTemplate('6472aad7-2877-11e4-b641-080027ea3a6e', 'sign_request', $filePath);
+$response = $client->updateBrandingEmail('6472aad7-2877-11e4-b641-080027ea3a6e', 'sign_request', $filePath);
 ```
 
 ## Template
@@ -258,3 +233,88 @@ Retrieve all data from your templates.
 ```php
 $response = $client->getTemplates();
 ```
+
+## Email
+
+### Get emails
+
+####Get all certified emails
+
+```php
+response = client.getEmails()
+```
+
+####Get last 50 emails
+
+```php
+response = client.getEmails(50)
+```
+
+####Navigate through all emails in blocks of 50 results
+
+```php
+response = client.getEmails(50, 50)
+```
+
+### Count emails
+
+Count all certified emails
+
+```php
+response = client.countEmails()
+```
+
+### Get email
+
+Get a single email
+
+```php
+client.getEmail('EMAIL_ID')
+```
+
+### Get email certificates
+
+Get a single email certificates
+
+```php
+client.getEmailCertificates('EMAIL_ID')
+```
+
+### Get email certificate
+
+Get a single email certificate
+
+```php
+client.getEmailCertificate('EMAIL_ID', 'CERTIFICATE_ID')
+```
+
+### Create email
+
+Create a new certified email.
+
+```php
+response = client.createEmail(
+    [ 'demo.pdf', 'receipt.pdf' ],
+    [{'email': 'john.doe@signaturit.com', 'fullname': 'Mr John'}],
+    'Php subject',
+    'Php body',
+    []
+)
+```
+
+### Get original file
+
+Get the original document of an email request and save it in the submitted path.
+
+```php
+response = client.downloadEmailOriginalFile('EMAIL_ID','CERTIFICATE_ID','/path/doc.pdf')
+```
+
+### Get audit trail document
+
+Get the audit trail document of an email request and save it in the submitted path.
+
+```php
+response = client.downloadEmailAuditTrail('EMAIL_ID','CERTIFICATE_ID','/path/doc.pdf')
+```
+
