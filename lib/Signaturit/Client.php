@@ -3,8 +3,6 @@
 namespace Signaturit;
 
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Post\PostFile;
 
 class Client
 {
@@ -24,7 +22,7 @@ class Client
     private $accessToken;
 
     /**
-     * @var Client
+     * @var GuzzleClient
      */
     private $client;
 
@@ -41,7 +39,7 @@ class Client
     {
         $this->accessToken = $accessToken;
 
-        $this->client = new GuzzleClient();
+        $this->client = new GuzzleClient(['headers' => ['Authorization' => "Bearer $this->accessToken", 'user-agent' => 'signaturit-php-sdk 0.0.4']]);
 
         $this->url = $production ? self::PROD_BASE_URL : self::SANDBOX_BASE_URL;
     }
@@ -51,7 +49,7 @@ class Client
      */
     public function getAccount()
     {
-        return $this->request('GET', 'v2/account.json')->json();
+        return $this->request('get', 'v2/account.json');
     }
 
     /**
@@ -61,7 +59,7 @@ class Client
      */
     public function getSignature($signatureId)
     {
-        return $this->request('GET', "v2/signs/$signatureId.json")->json();
+        return $this->request('get', "v2/signs/$signatureId.json");
     }
 
     /**
@@ -71,33 +69,15 @@ class Client
      *
      * @return array
      */
-    public function getSignatures($limit = 100, $offset = 0, $conditions = []) {
-        $params = [
-            'limit' => $limit,
-            'offset' => $offset
-        ];
+    public function getSignatures($limit = 100, $offset = 0, $conditions = [])
+    {
+        $params = $this->extractQueryParameters($conditions);
 
-        foreach ($conditions as $key => $value) {
-            if ($key === 'data') {
-                $data = [];
+        $params['limit'] = $limit;
+        $params['offset'] = $offset;
 
-                foreach ($value as $dataKey => $dataValue) {
-                    $data[$dataKey] = $dataValue;
-                }
 
-                $value = $data;
-            }
-
-            if ($key === 'ids') {
-                $value = implode(",", $value);
-            }
-
-            $params[$key] = $value;
-        }
-
-        $path = 'v2/signs.json?'.http_build_query($params);
-
-        return $this->request('GET', $path)->json();
+        return $this->request('get', 'v2/signs.json', ['query' => $params]);
     }
 
     /**
@@ -107,29 +87,9 @@ class Client
      */
     public function countSignatures($conditions = [])
     {
-        $params = [];
+        $params = $this->extractQueryParameters($conditions);
 
-        foreach ($conditions as $key => $value) {
-            if ($key === 'data') {
-                $data = [];
-
-                foreach ($value as $dataKey => $dataValue) {
-                    $data[$dataKey] = $dataValue;
-                }
-
-                $value = $data;
-            }
-
-            if ($key === 'ids') {
-                $value = implode(",", $value);
-            }
-
-            $params[$key] = $value;
-        }
-
-        $path = 'v2/signs/count.json?'.http_build_query($params);
-
-        return $this->request('GET', $path)->json()['count'];
+        return $this->request('get', 'v2/signs/count.json?', ['query' => $params])['count'];
     }
 
     /**
@@ -140,7 +100,7 @@ class Client
      */
     public function getSignatureDocument($signatureId, $documentId)
     {
-        return $this->request('GET', "v2/signs/$signatureId/documents/$documentId.json")->json();
+        return $this->request('get', "v2/signs/$signatureId/documents/$documentId.json");
     }
 
     /**
@@ -150,7 +110,7 @@ class Client
      */
     public function getSignatureDocuments($signatureId)
     {
-        return $this->request('GET', "v2/signs/$signatureId/documents.json")->json();
+        return $this->request('get', "v2/signs/$signatureId/documents.json");
     }
 
     /**
@@ -162,7 +122,12 @@ class Client
     {
         file_put_contents(
             $path,
-            $this->request('GET', "v2/signs/$signatureId/documents/$documentId/download/doc_proof")->getBody()
+            $this->request(
+                'get',
+                "v2/signs/$signatureId/documents/$documentId/download/doc_proof",
+                [],
+                false
+            )
         );
     }
 
@@ -175,7 +140,12 @@ class Client
     {
         file_put_contents(
             $path,
-            $this->request('GET', "v2/signs/$signatureId/documents/$documentId/download/signed")->getBody()
+            $this->request(
+                'get',
+                "v2/signs/$signatureId/documents/$documentId/download/signed",
+                [],
+                false
+            )
         );
     }
 
@@ -188,19 +158,11 @@ class Client
      */
     public function createSignature($files, $recipients, array $params = [])
     {
-        $recipients = (array) $recipients;
-        $files      = (array) $files;
+        $recipients      = (array) $recipients;
 
-        $params['recipients'] = isset($recipients['email']) ? [$recipients] : $recipients;
+        $multiFormData   = $this->extractFormParameters($files, $recipients, $params);
 
-        foreach ($files as $i => $path) {
-            $params["files[$i]"] =  new PostFile(
-                "files[$i]",
-                fopen($path, 'r')
-            );
-        }
-
-        return $this->request('POST', 'v2/signs.json', $params)->json();
+        return $this->request('post', 'v2/signs.json', ['multipart' => $multiFormData]);
     }
 
     /**
@@ -210,7 +172,7 @@ class Client
      */
     public function cancelSignature($signatureId)
     {
-        return $this->request('PATCH', "v2/signs/$signatureId/cancel.json")->json();
+        return $this->request('patch', "v2/signs/$signatureId/cancel.json");
     }
 
     /**
@@ -221,7 +183,7 @@ class Client
      */
     public function sendSignatureReminder($signatureId, $documentId)
     {
-        return $this->request('POST', "v2/signs/$signatureId/documents/$documentId/reminder.json")->json();
+        return $this->request('post', "v2/signs/$signatureId/documents/$documentId/reminder.json");
     }
 
     /**
@@ -231,7 +193,7 @@ class Client
      */
     public function getBranding($brandingId)
     {
-        return $this->request('GET', "v2/brandings/$brandingId.json")->json();
+        return $this->request('get', "v2/brandings/$brandingId.json");
     }
 
     /**
@@ -239,7 +201,7 @@ class Client
      */
     public function getBrandings()
     {
-        return $this->request('GET', "v2/brandings.json")->json();
+        return $this->request('get', "v2/brandings.json");
     }
 
     /**
@@ -249,7 +211,7 @@ class Client
      */
     public function createBranding(array $params = [])
     {
-        return $this->request('POST', "v2/brandings.json", $params)->json();
+        return $this->request('post', "v2/brandings.json", [ 'json' => $params]);
     }
 
     /**
@@ -260,7 +222,7 @@ class Client
      */
     public function updateBranding($brandingId, array $params)
     {
-        return $this->request('PATCH', "v2/brandings/$brandingId.json", $params)->json();
+        return $this->request('patch', "v2/brandings/$brandingId.json", [ 'json' => $params ]);
     }
 
     /**
@@ -273,7 +235,7 @@ class Client
     {
         $data = file_get_contents($filePath);
 
-        return $this->request('PUT', "v2/brandings/$brandingId/logo.json", $data)->json();
+        return $this->request('put', "v2/brandings/$brandingId/logo.json", ["body" => $data]);
     }
 
     /**
@@ -287,7 +249,7 @@ class Client
     {
         $data = file_get_contents($filePath);
 
-        return $this->request('PUT', "v2/brandings/$brandingId/emails/$template.json", $data)->json();
+        return $this->request('put', "v2/brandings/$brandingId/emails/$template.json", ["body" => $data]);
     }
 
     /**
@@ -295,7 +257,7 @@ class Client
      */
     public function getTemplates()
     {
-        return $this->request('GET', 'v2/templates.json')->json();
+        return $this->request('get', 'v2/templates.json');
     }
 
     /**
@@ -307,32 +269,12 @@ class Client
      */
     public function getEmails($limit=100, $offset=0, $conditions)
     {
-        $params = [
-            'limit' => $limit,
-            'offset' => $offset
-        ];
+        $params = $this->extractQueryParameters($conditions);
 
-        foreach ($conditions as $key => $value) {
-            if ($key === 'data') {
-                $data = [];
+        $params['limit']  = $limit;
+        $params['offset'] = $offset;
 
-                foreach ($value as $dataKey => $dataValue) {
-                    $data[$dataKey] = $dataValue;
-                }
-
-                $value = $data;
-            }
-
-            if ($key === 'ids') {
-                $value = implode(",", $value);
-            }
-
-            $params[$key] = $value;
-        }
-
-        $path = 'v3/emails.json?'.http_build_query($conditions);
-
-        return $this->request('GET', $path)->json();
+        return $this->request('v3/emails.json', ['query' => $params]);
     }
 
     /**
@@ -342,27 +284,9 @@ class Client
      */
     public function countEmails($conditions = [])
     {
-        foreach ($conditions as $key => $value) {
-            if ($key === 'data') {
-                $data = [];
+        $params = $this->extractQueryParameters($conditions);
 
-                foreach ($value as $dataKey => $dataValue) {
-                    $data[$dataKey] = $dataValue;
-                }
-
-                $value = $data;
-            }
-
-            if ($key === 'ids') {
-                $value = implode(",", $value);
-            }
-
-            $params[$key] = $value;
-        }
-
-        $path = 'v3/emails/count.json?'.http_build_query($conditions);
-
-        return $this->request('GET', $path)->json();
+        return $this->request('v3/emails/count.json', ['query' => $params]);
     }
 
     /**
@@ -372,7 +296,7 @@ class Client
      */
     public function getEmail($emailId)
     {
-        return $this->request('GET', "v3/emails/$emailId.json")->json();
+        return $this->request('get', "v3/emails/$emailId.json");
     }
 
     /**
@@ -382,7 +306,7 @@ class Client
      */
     public function getEmailCertificates($emailId)
     {
-        return $this->request('GET', "v3/emails/$emailId/certificates.json")->json();
+        return $this->request('get', "v3/emails/$emailId/certificates.json");
     }
 
     /**
@@ -393,7 +317,7 @@ class Client
      */
     public function getEmailCertificate($emailId, $certificateId)
     {
-        return $this->request('GET', "v3/emails/$emailId/certificates/$certificateId.json")->json();
+        return $this->request('get', "v3/emails/$emailId/certificates/$certificateId.json");
     }
 
     /**
@@ -410,19 +334,19 @@ class Client
         $recipients = (array) $recipients;
         $files      = (array) $files;
 
-        $params['recipients'] = isset($recipients['email']) ? [$recipients] : $recipients;
+        $multiFormData   = $this->extractFormParameters($files, $recipients, $params);
 
-        foreach ($files as $i => $path) {
-            $params["files[$i]"] =  new PostFile(
-                "files[$i]",
-                fopen($path, 'r')
-            );
-        }
+        $multiFormData[] = [
+            'name' => 'subject',
+            'contents' => $subject
+        ];
 
-        $params['subject'] = $subject;
-        $params['body']    = $body;
+        $multiFormData[] = [
+            'name' => 'body',
+            'contents' => $body
+        ];
 
-        return $this->request('POST', 'v3/emails.json', $params)->json();
+        return $this->request('post', 'v3/emails.json', ['multipart' => $multiFormData]);
     }
 
     /**
@@ -434,7 +358,12 @@ class Client
     {
         file_put_contents(
             $path,
-            $this->request('GET', "v3/emails/$emailId/documents/$certificateId/download/audit_trail")->getBody()
+            $this->request(
+                'get',
+                "v3/emails/$emailId/documents/$certificateId/download/audit_trail",
+                [],
+                false
+            )
         );
     }
 
@@ -447,25 +376,116 @@ class Client
     {
         file_put_contents(
             $path,
-            $this->request('GET', "v3/emails/$emailId/documents/$certificateId/download/original")->getBody()
+            $this->request(
+                'get',
+                "v3/emails/$emailId/documents/$certificateId/download/original",
+                [],
+                false
+            )
         );
     }
 
     /**
-     * @param string $method
-     * @param string $path
-     * @param array  $params
+     * Extract query parameters
      *
-     * @return Response
+     * @param $params
+     *
+     * @return array
      */
-    protected function request($method, $path, $params = [])
+    protected function extractQueryParameters($params)
     {
-        $data['headers'] = ['Authorization' => "Bearer $this->accessToken", 'user-agent' => 'signaturit-php-sdk 0.0.4'];
-        $data['body']    = $params;
+        foreach ($params as $key => $value) {
+            if ($key === 'data') {
+                $data = [];
 
-        $request = $this->client->createRequest($method, "$this->url/$path", $data);
+                foreach ($value as $dataKey => $dataValue) {
+                    $data[$dataKey] = $dataValue;
+                }
 
-        $response = $this->client->send($request);
+                $value = $data;
+            }
+
+            if ($key === 'ids') {
+                $value = implode(",", $value);
+            }
+
+            $params[$key] = $value;
+        }
+
+        return $params;
+    }
+
+    /**
+     * Extract basic data for post operations.
+     *
+     * @param $files
+     * @param $recipients
+     * @param $params
+     *
+     * @return array
+     */
+    protected function extractFormParameters($files, $recipients, $params)
+    {
+        $recipients      = isset($recipients['email']) ? [$recipients] : $recipients;
+
+        $multiFormData   = [];
+
+        $recipientNumber = 0;
+
+        foreach ($recipients as $recipient) {
+            $multiFormData[] = [
+                'name'     => "recipients[$recipientNumber][email]",
+                'contents' => $recipient['email']
+            ];
+
+            $multiFormData[] = [
+                'name'     => "recipients[$recipientNumber][fullname]",
+                'contents' => $recipient['fullname']
+            ];
+        }
+
+        foreach ($files as $i => $path) {
+            $multiFormData[] =  [
+                'name'    => "files[$i]",
+                'contents' =>  fopen($path, 'r')
+            ];
+        }
+
+        foreach ($params as $paramKey => $paramValue) {
+            if (is_array($paramValue)) {
+                foreach ($paramValue as $innerKey => $innerValue) {
+                    $multiFormData[] = [
+                        'name'     => "data[$innerKey]",
+                        'contents' => $innerValue
+                    ];
+                }
+                continue;
+            }
+
+            $multiFormData[] = [
+                'name'     => $paramKey,
+                'contents' => $paramValue
+            ];
+        }
+
+        return $multiFormData;
+    }
+
+    /**
+     * @param $method
+     * @param $path
+     * @param array $params
+     * @param bool $json
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    protected function request($method, $path, $params = [], $json = true)
+    {
+        $response = $this->client->$method("$this->url/$path", $params)->getBody();
+
+        if ($json) {
+            $response = json_decode($response, true);
+        }
 
         return $response;
     }
