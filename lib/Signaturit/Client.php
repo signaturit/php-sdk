@@ -442,6 +442,8 @@ class Client
                 'name'     => "recipients[$recipientNumber][fullname]",
                 'contents' => $recipient['fullname']
             ];
+
+            ++$recipientNumber;
         }
 
         foreach ($files as $i => $path) {
