@@ -1,3 +1,8 @@
+============================================================
+DO NOT USE THIS CODE ON PRODUCTION UNTIL NEW RELEASE IS DONE
+============================================================
+
+
 Signaturit PHP SDK
 =====================
 This package is a PHP wrapper around the Signaturit API. If you didn't read the documentation yet, maybe it's time to take a look [here](http://docs.signaturit.com/).
@@ -34,7 +39,15 @@ $client = new Signaturit\Client($accessToken, true);
 Examples
 --------
 
-## Signature request
+## Signatures
+
+### Count signature requests
+
+Count your signature requests.
+
+```php
+$response = $client->countSignatures();
+```
 
 ### Get all signature requests
 
@@ -55,15 +68,7 @@ $response = $client->getSignatures(50);
 ##### Getting signatures with custom field "crm_id"
 
 ```php
-$response = $client->getSignatures(100, 0, ['data' => 'crm_id' => 'CUSTOM_ID']])
-```
-
-### Count signature requests
-
-Count your signature requests.
-
-```php
-$response = $client->countSignatures();
+$response = $client->getSignatures(100, 0, ['crm_id' => 'CUSTOM_ID'])
 ```
 
 ### Get signature request
@@ -73,30 +78,13 @@ Get the information regarding a single signature request passing its ID.
 ```php
 $response = $client->getSignature('a066298d-2877-11e4-b641-080027ea3a6e');
 ```
-
-### Get signature documents
-
-Get all documents from a signature request.
-
-```php
-$response = $client->getSignatureDocuments('a066298d-2877-11e4-b641-080027ea3a6e')
-```
-
-### Get signature document
-
-Get a single document from a signature request.
-
-```php
-$response = $client->getSignatureDocument('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a1eb-2877-11e4-b641-080027ea3a6e');
-```
-
 ### Signature request
 
 Create a new signature request. Check all available [options](http://docs.signaturit.com/api/#sign_create_sign).
 
 ```php
 $filePath = '/documents/contracts/receipt250.pdf';
-$recipients = array('email' => 'john.doe@example.com', 'fullname' => 'John Doe');
+$recipients = array('email' => 'john.doe@example.com', 'name' => 'John Doe');
 $options = array('subject' => 'Receipt no. 250', 'body' => 'Please sign the receipt');
 
 $response = $client->createSignature($filePath, $recipients, $options);
@@ -106,7 +94,7 @@ You can add custom info in your requests
 
 ```php
 $filePath = '/documents/contracts/receipt250.pdf';
-$recipients = array('email' => 'john.doe@example.com', 'fullname' => 'John Doe');
+$recipients = array('email' => 'john.doe@example.com', 'name' => 'John Doe');
 $options = array('subject' => 'Receipt no. 250', 'body' => 'Please sign the receipt', 'data' => ['crm_id' => '45673']);
 
 $response = $client->createSignature($filePath, $recipients, $options);
@@ -115,7 +103,7 @@ $response = $client->createSignature($filePath, $recipients, $options);
 You can send templates with the fields filled
 ```php
 
-$recipients = array('email' => 'john.doe@example.com', 'fullname' => 'John Doe');
+$recipients = array('email' => 'john.doe@example.com', 'name' => 'John Doe');
 $options = array('subject' => 'Receipt no. 250', 'body' => 'Please sign the receipt', 'templates' => array('template_name'), 'data' => ['widget_id' => 'default value']);
 
 $response = $client->createSignature(array(), $recipients, $options);
@@ -138,18 +126,18 @@ $response = $client->sendSignatureReminder('a066298d-2877-11e4-b641-080027ea3a6e
 
 ### Get audit trail
 
-Get the audit trail of a signature request document and save it locally.
+Get the audit trail of a signature request document
 
 ```php
-$response = $client->downloadAuditTrail('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a1eb-2877-11e4-b641-080027ea3a6e','/local/path/for/doc.pdf');
+$response = $client->downloadAuditTrail('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a1eb-2877-11e4-b641-080027ea3a6e');
 ```
 
 ### Get signed document
 
-Get the signed document of a signature request document and save it locally.
+Get the signed document of a signature request document
 
 ```php
-$response = $client->downloadSignedDocument('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a1eb-2877-11e4-b641-080027ea3a6e','/local/path/for/doc.pdf');
+$response = $client->downloadSignedDocument('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a1eb-2877-11e4-b641-080027ea3a6e');
 ```
 
 ## Account
@@ -186,8 +174,8 @@ Create a new branding. You can check all branding params [here](http://docs.sign
 
 ```php
 $options = array(
-    'corporate_layout_color' => '#FFBF00',
-    'corporate_text_color' => '#2A1B0A',
+    'layout_color' => '#FFBF00',
+    'text_color' => '#2A1B0A',
     'application_texts' => array('sign_button' => 'Sign!')
 );
 
@@ -202,26 +190,6 @@ Update a single branding.
 $options = array('application_texts' => array('send_button' => 'Send!'));
 
 $response = $client->updateBranding('6472aad7-2877-11e4-b641-080027ea3a6e', $options);
-```
-
-### Update branding logo
-
-Change the branding logo.
-
-```php
-$filePath = '/logos/new_logo.png';
-
-$response = $client->updateBrandingLogo('6472aad7-2877-11e4-b641-080027ea3a6e', $filePath);
-```
-
-### Update branding email
-
-Change a email. Learn more about the emails [here](http://docs.signaturit.com/api/#put_template_branding).
-
-```php
-$filePath = '/templates/sign_request_template.html';
-
-$response = $client->updateBrandingEmail('6472aad7-2877-11e4-b641-080027ea3a6e', 'sign_request', $filePath);
 ```
 
 ## Template
@@ -241,19 +209,19 @@ $response = $client->getTemplates();
 ####Get all certified emails
 
 ```php
-response = client.getEmails()
+response = client->getEmails()
 ```
 
 ####Get last 50 emails
 
 ```php
-response = client.getEmails(50)
+response = client->getEmails(50)
 ```
 
 ####Navigate through all emails in blocks of 50 results
 
 ```php
-response = client.getEmails(50, 50)
+response = client->getEmails(50, 50)
 ```
 
 ### Count emails
@@ -261,7 +229,7 @@ response = client.getEmails(50, 50)
 Count all certified emails
 
 ```php
-response = client.countEmails()
+response = client->countEmails()
 ```
 
 ### Get email
@@ -269,23 +237,7 @@ response = client.countEmails()
 Get a single email
 
 ```php
-client.getEmail('EMAIL_ID')
-```
-
-### Get email certificates
-
-Get a single email certificates
-
-```php
-client.getEmailCertificates('EMAIL_ID')
-```
-
-### Get email certificate
-
-Get a single email certificate
-
-```php
-client.getEmailCertificate('EMAIL_ID', 'CERTIFICATE_ID')
+client->getEmail('EMAIL_ID')
 ```
 
 ### Create email
@@ -295,26 +247,17 @@ Create a new certified email.
 ```php
 response = client.createEmail(
     [ 'demo.pdf', 'receipt.pdf' ],
-    [{'email': 'john.doe@signaturit.com', 'fullname': 'Mr John'}],
+    [{'email': 'john.doe@signaturit.com', 'name': 'Mr John'}],
     'Php subject',
     'Php body',
     []
 )
 ```
 
-### Get original file
-
-Get the original document of an email request and save it in the submitted path.
-
-```php
-response = client.downloadEmailOriginalFile('EMAIL_ID','CERTIFICATE_ID','/path/doc.pdf')
-```
-
 ### Get audit trail document
 
-Get the audit trail document of an email request and save it in the submitted path.
+Get the audit trail document of an email request.
 
 ```php
-response = client.downloadEmailAuditTrail('EMAIL_ID','CERTIFICATE_ID','/path/doc.pdf')
+response = client.downloadEmailAuditTrail('EMAIL_ID','CERTIFICATE_ID')
 ```
-
