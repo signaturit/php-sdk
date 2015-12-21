@@ -271,37 +271,17 @@ class Client
     /**
      * @param string $emailId
      * @param string $certificateId
-     * @param string $path
+     *
+     * @return \Psr\Http\Message\ResponseInterface
      */
-    public function downloadEmailAuditTrail($emailId, $certificateId, $path)
+    public function downloadEmailAuditTrail($emailId, $certificateId)
     {
-        file_put_contents(
-            $path,
-            $this->request(
+        return $this->request(
                 'get',
                 "v3/emails/$emailId/documents/$certificateId/download/audit_trail",
                 [],
                 false
-            )
-        );
-    }
-
-    /**
-     * @param string $emailId
-     * @param string $certificateId
-     * @param string $path
-     */
-    public function downloadEmailOriginalFile($emailId, $certificateId, $path)
-    {
-        file_put_contents(
-            $path,
-            $this->request(
-                'get',
-                "v3/emails/$emailId/documents/$certificateId/download/original",
-                [],
-                false
-            )
-        );
+            );
     }
 
     /**
