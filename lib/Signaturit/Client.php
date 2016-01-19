@@ -143,13 +143,12 @@ class Client
 
     /**
      * @param string $signatureId
-     * @param $documentId
      *
      * @return array
      */
-    public function sendSignatureReminder($signatureId, $documentId)
+    public function sendSignatureReminder($signatureId)
     {
-        return $this->request('post', "v3/signatures/$signatureId/documents/$documentId/reminder.json");
+        return $this->request('post', "v3/signatures/$signatureId/reminder.json");
     }
 
     /**
