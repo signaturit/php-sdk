@@ -277,7 +277,7 @@ class Client
     {
         return $this->request(
                 'get',
-                "v3/emails/$emailId/documents/$certificateId/download/audit_trail",
+                "v3/emails/$emailId/certificates/$certificateId/download/audit_trail",
                 [],
                 false
             );
