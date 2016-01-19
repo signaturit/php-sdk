@@ -14,7 +14,7 @@ class Client
     /**
      * Signaturit's sandbox API URL
      */
-    const SANDBOX_BASE_URL = 'http://sandbox.signaturit.com';
+    const SANDBOX_BASE_URL = 'http://api.sandbox.signaturit.com';
 
     /**
      * @var string
@@ -205,14 +205,14 @@ class Client
      *
      * @return array
      */
-    public function getEmails($limit=100, $offset=0, $conditions)
+    public function getEmails($limit = 100, $offset = 0, $conditions = [])
     {
         $params = $this->extractQueryParameters($conditions);
 
         $params['limit']  = $limit;
         $params['offset'] = $offset;
 
-        return $this->request('v3/emails.json', ['query' => $params]);
+        return $this->request('get', 'v3/emails.json', ['query' => $params]);
     }
 
     /**
@@ -224,7 +224,7 @@ class Client
     {
         $params = $this->extractQueryParameters($conditions);
 
-        return $this->request('v3/emails/count.json', ['query' => $params]);
+        return $this->request('get', 'v3/emails/count.json', ['query' => $params]);
     }
 
     /**
