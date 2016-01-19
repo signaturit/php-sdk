@@ -14,7 +14,7 @@ class Client
     /**
      * Signaturit's sandbox API URL
      */
-    const SANDBOX_BASE_URL = 'http://api.sandbox.signaturit.com';
+    const SANDBOX_BASE_URL = 'https://api.sandbox.signaturit.com';
 
     /**
      * @var string
