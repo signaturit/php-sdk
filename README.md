@@ -1,3 +1,7 @@
+========================
+DO NOT USE MASTER BRANCH
+========================
+
 Signaturit PHP SDK
 =====================
 This package is a PHP wrapper around the Signaturit API. If you didn't read the documentation yet, maybe it's time to take a look [here](https://docs.signaturit.com/).
