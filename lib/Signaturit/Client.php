@@ -191,11 +191,18 @@ class Client
     }
 
     /**
+     * @param int $limit
+     * @param int $offset
+     *
      * @return array
      */
-    public function getTemplates()
+    public function getTemplates($limit = 100, $offset = 0)
     {
-        return $this->request('get', 'v3/templates.json');
+        $params = [];
+        $params['limit']  = $limit;
+        $params['offset'] = $offset;
+
+        return $this->request('get', 'v3/templates.json', ['query' => $params]);
     }
 
     /**

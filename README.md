@@ -121,7 +121,7 @@ $response = $client->cancelSignature('a066298d-2877-11e4-b641-080027ea3a6e');
 Send a reminder email.
 
 ```php
-$response = $client->sendSignatureReminder('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a1eb-2877-11e4-b641-080027ea3a6e');
+$response = $client->sendSignatureReminder('a066298d-2877-11e4-b641-080027ea3a6e');
 ```
 
 ### Get audit trail
