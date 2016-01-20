@@ -1,13 +1,8 @@
-============================================================
-DO NOT USE THIS CODE ON PRODUCTION UNTIL NEW RELEASE IS DONE
-============================================================
-
-
 Signaturit PHP SDK
 =====================
-This package is a PHP wrapper around the Signaturit API. If you didn't read the documentation yet, maybe it's time to take a look [here](http://docs.signaturit.com/).
+This package is a PHP wrapper around the Signaturit API. If you didn't read the documentation yet, maybe it's time to take a look [here](https://docs.signaturit.com/).
 
-You'll need at least PHP 5.3 to use this package.
+You'll need at least PHP 5.5 to use this package (http://php.net/supported-versions.php).
 
 Configuration
 -------------
@@ -80,12 +75,12 @@ $response = $client->getSignature('a066298d-2877-11e4-b641-080027ea3a6e');
 ```
 ### Signature request
 
-Create a new signature request. Check all available [options](http://docs.signaturit.com/api/#sign_create_sign).
+Create a new signature request. You can check all signature [params](https://docs.signaturit.com/api/v3#sign_create_sign).
 
 ```php
-$filePath = '/documents/contracts/receipt250.pdf';
-$recipients = array('email' => 'john.doe@example.com', 'name' => 'John Doe');
-$options = array('subject' => 'Receipt no. 250', 'body' => 'Please sign the receipt');
+$filePath   = '/documents/contracts/receipt250.pdf';
+$recipients = ['email' => 'john.doe@example.com', 'name' => 'John Doe'];
+$options    = ['subject' => 'Receipt no. 250', 'body' => 'Please sign the receipt'];
 
 $response = $client->createSignature($filePath, $recipients, $options);
 ```
@@ -93,9 +88,9 @@ $response = $client->createSignature($filePath, $recipients, $options);
 You can add custom info in your requests
 
 ```php
-$filePath = '/documents/contracts/receipt250.pdf';
-$recipients = array('email' => 'john.doe@example.com', 'name' => 'John Doe');
-$options = array('subject' => 'Receipt no. 250', 'body' => 'Please sign the receipt', 'data' => ['crm_id' => '45673']);
+$filePath   = '/documents/contracts/receipt250.pdf';
+$recipients = ['email' => 'john.doe@example.com', 'name' => 'John Doe'];
+$options    = ['subject' => 'Receipt no. 250', 'body' => 'Please sign the receipt', 'data' => ['crm_id' => '45673']];
 
 $response = $client->createSignature($filePath, $recipients, $options);
 ```
@@ -103,10 +98,10 @@ $response = $client->createSignature($filePath, $recipients, $options);
 You can send templates with the fields filled
 ```php
 
-$recipients = array('email' => 'john.doe@example.com', 'name' => 'John Doe');
-$options = array('subject' => 'Receipt no. 250', 'body' => 'Please sign the receipt', 'templates' => array('template_name'), 'data' => ['widget_id' => 'default value']);
+$recipients = ['email' => 'john.doe@example.com', 'name' => 'John Doe'];
+$options    = ['subject' => 'Receipt no. 250', 'body' => 'Please sign the receipt', 'templates' => ['template_name'], 'data' => ['widget_id' => 'default value']];
 
-$response = $client->createSignature(array(), $recipients, $options);
+$response = $client->createSignature([], $recipients, $options);
 ```
 ### Cancel signature request
 
@@ -140,16 +135,6 @@ Get the signed document of a signature request document
 $response = $client->downloadSignedDocument('a066298d-2877-11e4-b641-080027ea3a6e', 'd474a1eb-2877-11e4-b641-080027ea3a6e');
 ```
 
-## Account
-
-### Get account
-
-Retrieve the information of your account.
-
-```php
-$response = $client->getAccount();
-```
-
 ## Branding
 
 ### Get brandings
@@ -170,14 +155,14 @@ $response = $client->getBranding('6472aad7-2877-11e4-b641-080027ea3a6e');
 
 ### Create branding
 
-Create a new branding. You can check all branding params [here](http://docs.signaturit.com/api/#set_branding).`
+Create a new branding. You can check all branding [params](https://docs.signaturit.com/api/v3#set_branding).`
 
 ```php
-$options = array(
-    'layout_color' => '#FFBF00',
-    'text_color' => '#2A1B0A',
-    'application_texts' => array('sign_button' => 'Sign!')
-);
+$options = [
+    'layout_color'      => '#FFBF00',
+    'text_color'        => '#2A1B0A',
+    'application_texts' => ['sign_button' => 'Sign!']
+];
 
 $response = $client->createBranding($options);
 ```
@@ -187,7 +172,7 @@ $response = $client->createBranding($options);
 Update a single branding.
 
 ```php
-$options = array('application_texts' => array('send_button' => 'Send!'));
+$options = ['application_texts' => ['send_button' => 'Send!']];
 
 $response = $client->updateBranding('6472aad7-2877-11e4-b641-080027ea3a6e', $options);
 ```
@@ -246,8 +231,8 @@ Create a new certified email.
 
 ```php
 response = client.createEmail(
-    [ 'demo.pdf', 'receipt.pdf' ],
-    [{'email': 'john.doe@signaturit.com', 'name': 'Mr John'}],
+    ['demo.pdf', 'receipt.pdf'],
+    ['email' => 'john.doe@signaturit.com', 'name' => 'Mr John'],
     'Php subject',
     'Php body',
     []

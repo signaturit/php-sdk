@@ -39,7 +39,12 @@ class Client
     {
         $this->accessToken = $accessToken;
 
-        $this->client = new GuzzleClient(['headers' => ['Authorization' => "Bearer $this->accessToken", 'user-agent' => 'signaturit-php-sdk 1.0.0']]);
+        $this->client = new GuzzleClient(
+            [
+                'headers'    => ['Authorization' => "Bearer $this->accessToken",
+                'user-agent' => 'signaturit-php-sdk 1.0.0']
+            ]
+        );
 
         $this->url = $production ? self::PROD_BASE_URL : self::SANDBOX_BASE_URL;
     }
@@ -50,7 +55,7 @@ class Client
      */
     public function countSignatures($conditions = [])
     {
-        $params   = $this->extractQueryParameters($conditions);
+        $params = $this->extractQueryParameters($conditions);
 
         return $this->request('get', 'v3/signatures/count.json', ['query' => $params]);
     }
@@ -78,7 +83,6 @@ class Client
 
         $params['limit'] = $limit;
         $params['offset'] = $offset;
-
 
         return $this->request('get', 'v3/signatures.json', ['query' => $params]);
     }
@@ -124,9 +128,8 @@ class Client
      */
     public function createSignature($files, $recipients, array $params = [])
     {
-        $recipients      = (array) $recipients;
-
-        $multiFormData   = $this->extractFormParameters($files, $recipients, $params);
+        $recipients    = (array) $recipients;
+        $multiFormData = $this->extractFormParameters($files, $recipients, $params);
 
         return $this->request('post', 'v3/signatures.json', ['multipart' => $multiFormData]);
     }
@@ -176,7 +179,7 @@ class Client
      */
     public function createBranding(array $params = [])
     {
-        return $this->request('post', "v3/brandings.json", [ 'json' => $params]);
+        return $this->request('post', "v3/brandings.json", ['json' => $params]);
     }
 
     /**
@@ -187,7 +190,7 @@ class Client
      */
     public function updateBranding($brandingId, array $params)
     {
-        return $this->request('patch', "v3/brandings/$brandingId.json", [ 'json' => $params ]);
+        return $this->request('patch', "v3/brandings/$brandingId.json", ['json' => $params ]);
     }
 
     /**
@@ -199,6 +202,7 @@ class Client
     public function getTemplates($limit = 100, $offset = 0)
     {
         $params = [];
+
         $params['limit']  = $limit;
         $params['offset'] = $offset;
 
@@ -255,21 +259,13 @@ class Client
      */
     public function createEmail($files, $recipients, $subject, $body, $params)
     {
-        $recipients      = (array) $recipients;
+        $files      = (array) $files;
+        $recipients = (array) $recipients;
 
-        $files           = (array) $files;
+        $multiFormData = $this->extractFormParameters($files, $recipients, $params);
 
-        $multiFormData   = $this->extractFormParameters($files, $recipients, $params);
-
-        $multiFormData[] = [
-            'name' => 'subject',
-            'contents' => $subject
-        ];
-
-        $multiFormData[] = [
-            'name' => 'body',
-            'contents' => $body
-        ];
+        $multiFormData[] = ['name' => 'subject', 'contents' => $subject];
+        $multiFormData[] = ['name' => 'body', 'contents' => $body];
 
         return $this->request('post', 'v3/emails.json', ['multipart' => $multiFormData]);
     }
@@ -283,11 +279,11 @@ class Client
     public function downloadEmailAuditTrail($emailId, $certificateId)
     {
         return $this->request(
-                'get',
-                "v3/emails/$emailId/certificates/$certificateId/download/audit_trail",
-                [],
-                false
-            );
+            'get',
+            "v3/emails/$emailId/certificates/$certificateId/download/audit_trail",
+            [],
+            false
+        );
     }
 
     /**
@@ -311,7 +307,7 @@ class Client
             }
 
             if ($key === 'ids') {
-                $value = implode(",", $value);
+                $value = implode(',', $value);
             }
 
             $params[$key] = $value;
@@ -330,13 +326,11 @@ class Client
     protected function fillArray(&$formArray, $parameters, $parent)
     {
         foreach ($parameters as $key => $value) {
-            if (is_array($value)) {
-                $parentKey = strlen($parent) === 0 ? $key : "{$parent}[$key]";
+            $parentKey = strlen($parent) === 0 ? $key : "{$parent}[$key]";
 
+            if (is_array($value)) {
                 $this->fillArray($formArray, $parameters[$key], $parentKey);
             } else {
-                $parentKey = strlen($parent) === 0 ? $key : "{$parent}[$key]";
-
                 $formArray[] = [
                     'name'     =>  $parentKey,
                     'contents' => (string) $value
@@ -356,9 +350,9 @@ class Client
      */
     protected function extractFormParameters($files, $recipients, $params)
     {
-        $recipients      = isset($recipients['email']) ? [$recipients] : $recipients;
+        $recipients = isset($recipients['email']) ? [$recipients] : $recipients;
 
-        $multiFormData   = [];
+        $multiFormData = [];
 
         $recipientNumber = 0;
 
@@ -370,8 +364,8 @@ class Client
 
         foreach ($files as $i => $path) {
             $multiFormData[] =  [
-                'name'    => "files[$i]",
-                'contents' =>  fopen($path, 'r')
+                'name'     => "files[$i]",
+                'contents' => fopen($path, 'r')
             ];
         }
 
