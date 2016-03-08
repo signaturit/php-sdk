@@ -259,10 +259,16 @@ class Client
      */
     public function createEmail($files, $recipients, $subject, $body, $params)
     {
-        $files      = (array) $files;
-        $recipients = (array) $recipients;
+        $recipients      = (array) $recipients;
 
-        $multiFormData = $this->extractFormParameters($files, $recipients, $params);
+        $files           = (array) $files;
+
+        $recipients      = (isset($recipients['to']) || isset($recipients['cc']) || isset($recipients['bcc'])) ?
+            [ $recipients ]
+            :
+            $recipients;
+
+        $multiFormData   = $this->extractFormParameters($files, $recipients, $params);
 
         $multiFormData[] = ['name' => 'subject', 'contents' => $subject];
         $multiFormData[] = ['name' => 'body', 'contents' => $body];
