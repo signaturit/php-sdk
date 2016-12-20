@@ -132,6 +132,8 @@ class Client
             $files = [ $files ];
         }
 
+        $files         = (array) $files;
+
         $recipients    = (array) $recipients;
 
         $multiFormData = $this->extractFormParameters($files, $recipients, $params);
