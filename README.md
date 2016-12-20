@@ -250,3 +250,261 @@ Get the audit trail document of an email request.
 ```php
 response = client.downloadEmailAuditTrail('EMAIL_ID','CERTIFICATE_ID')
 ```
+
+## Sms
+
+### Get all sms
+
+```php
+response = client->getSms()
+```
+
+### Count emails
+
+Count all certified sms
+
+```php
+response = client->countSms()
+```
+
+### Get sms
+
+Get a single sms
+
+```php
+client->getSms('SMS_ID')
+```
+
+### Create sms
+
+Create a new certified sms.
+
+```php
+response = client.createSms(
+    [],
+    ['phone' => '34123456', 'name' => 'Mr John'],
+    'Php body',
+    []
+)
+```
+
+### Get audit trail document
+
+Get the audit trail document of an sms request.
+
+```php
+response = client.downloadSmsAuditTrail('SMS_ID','CERTIFICATE_ID')
+```
+
+## Team
+
+### Get users
+
+Get all account users
+
+```php
+$response = $client->getUsers();
+```
+
+### Get seats
+
+Get all account seats
+
+```php
+$response = $client->getSeats();
+```
+
+### Get user
+
+Get a single user
+
+```php
+$response = $client->getUser('USER_ID');
+```
+
+### Invite users to join your team
+
+Invite user to join the team
+ 
+```php
+$response = $client->inviteUser('bob.soap@signaturit.com', 'admin');
+```
+
+### Change user role
+
+Change role for user
+
+```php
+$response = $client->changeUserRole('USER_ID', 'member');
+```
+
+### Remove user
+
+Remove user from the team
+
+```php
+$response = $client->removeUser('USER_ID');
+```
+
+### Remove seat
+
+Remove seat from the team
+
+```php
+$response = $client->removeSeat('SEAT_ID');
+```
+
+### Get groups
+
+Get all account groups
+
+```php
+$response = $client->getGroups();
+```
+
+### Get group
+
+Get a single group
+
+```php
+$response = $client->getGroup('GROUP_ID');
+```
+
+### Create group
+
+Create a new group
+
+```php
+$response = $client->createGroup('test_node');
+```
+
+### Update group
+
+Update group name
+
+```php
+$response = $client->updateGroup('GROUP_ID', 'new_name');
+```
+
+### Delete group
+
+Delete a group
+
+```php
+$response = $client->deleteGroup('GROUP_ID');
+```
+
+### Add manager to group
+
+Add a manager to a group
+
+```php
+$response = $client->addManagerToGroup('GROUP_ID', 'USER_ID');
+```
+
+### Add manager to group
+
+Add a member to a group
+
+```php
+$response = $client->addMemberToGroup('GROUP_ID', 'USER_ID');
+```                     
+
+### Delete manager from group
+
+Remove a manager from group
+
+```php
+$response = $client->removeManagerFromGroup('GROUP_ID', 'USER_ID');
+```
+
+### Delete member from group
+
+Remove a member from group
+
+```php
+$response  = $client->removeMemberFromGroup('GROUP_ID', 'USER_ID');
+```
+
+
+## Contacts
+
+### Get contacts
+
+Get all contacts
+
+```php
+$response = $client->getContacts();
+```
+
+### Get contact
+
+Get a single contact
+
+```php
+$response = $client->getContact('CONTACT_ID');
+```
+
+### Create contact
+
+Create a new contact
+
+```php
+$response = $client->createContact('email@signaturit.com', 'name');
+```
+
+### Update contact
+
+Update contact
+
+```php
+$response = $client->updateContact('CONTACT_ID', 'new_email@signaturit.com', 'name1');
+```
+
+### Delete contact
+
+Delete a contact
+
+```php
+$response = $client->deleteContact('CONTACT_ID');
+```
+
+### Get subscriptions
+
+Get all subscriptions
+
+```php
+$response = $client->getSubscriptions();
+```
+
+### Get subscription
+
+Get a single subscription
+
+```php
+$response = $client->getSubscription('SUBSCRIPTION_ID');
+```
+
+### Create subscription
+
+Create a new subscription
+
+```php
+$response = $client->createSubscription('http://httpbin.org/post', 'email_processed');
+```
+
+### Update subscription
+
+Update contact
+
+```php
+$response = $client->updateSubscription('SUBSCRIPTION_ID', null, 'email_delivered');
+```
+
+### Delete subscription
+
+Delete a subscription
+
+```php
+$response = $client->deleteSubscription('SUBSCRIPTION_ID');
+```
