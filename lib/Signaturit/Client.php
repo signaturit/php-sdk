@@ -42,7 +42,7 @@ class Client
         $this->client = new GuzzleClient(
             [
                 'headers'    => ['Authorization' => "Bearer $this->accessToken",
-                'user-agent' => 'signaturit-php-sdk 1.0.0']
+                'user-agent' => 'signaturit-php-sdk 1.1.0']
             ]
         );
 
