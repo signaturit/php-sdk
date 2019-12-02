@@ -841,19 +841,16 @@ class Client
      * @param $path
      * @param array $params
      * @param bool $json
+     * @throws \Exception
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
     protected function request($method, $path, $params = [], $json = true)
     {
-        try {
-            $response = $this->client->$method("$this->url/$path", $params)->getBody();
+        $response = $this->client->$method("$this->url/$path", $params)->getBody();
 
-            if ($json) {
-                $response = json_decode($response, true);
-            }
-        } catch (\Exception $exception) {
-            $response = $exception->getMessage();
+        if ($json) {
+            $response = json_decode($response, true);
         }
 
         return $response;
