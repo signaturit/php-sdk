@@ -8,8 +8,8 @@
 
 
     <logging>
-        <log type="coverage-clover" target="/tmp/tests/clover.xml"/>
-        <log type="junit" target="/tmp/tests/report.xml"/>
+        <log type="coverage-clover" target="coverage/clover.xml"/>
+        <log type="junit" target="coverage/report.xml"/>
     </logging>
 
 

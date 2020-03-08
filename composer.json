@@ -8,17 +8,18 @@
             "email": "api@signaturit.com"
         }
     ],
-    "require": {
-        "php": ">=5.5.0",
-        "ext-json": "*",
-        "guzzlehttp/guzzle": "~6.0"
-    },
     "autoload" : {
         "psr-4":  {
             "Signaturit\\": "src/Signaturit/"
         }
     },
+    "require": {
+        "php": ">=5.5.0",
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "~6.0"
+    },
     "require-dev": {
+        "ext-xdebug": ">=2.4.0",
         "phpunit/phpunit": "^9.0"
     }
 }
