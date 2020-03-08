@@ -30,14 +30,16 @@ class Client
 
     /**
      * @param string $accessToken
-     * @param bool   $production
+     * @param bool $production
      */
     public function __construct($accessToken, $production = false)
     {
         $this->client = new GuzzleClient(
             [
-                'headers'    => ['Authorization' => "Bearer $accessToken",
-                'user-agent' => 'signaturit-php-sdk 1.1.0']
+                'headers' => [
+                    'Authorization' => "Bearer $accessToken",
+                    'user-agent' => 'signaturit-php-sdk 1.1.0',
+                ],
             ]
         );
 
@@ -118,19 +120,19 @@ class Client
     /**
      * @param string|string[] $files
      * @param string|string[] $recipients
-     * @param array           $params
+     * @param array $params
      *
      * @return ResponseInterface
      */
     public function createSignature($files, $recipients, array $params = [])
     {
         if (!is_array($files)) {
-            $files = [ $files ];
+            $files = [$files];
         }
 
-        $files         = (array) $files;
+        $files = (array)$files;
 
-        $recipients    = (array) $recipients;
+        $recipients = (array)$recipients;
 
         $multiFormData = $this->extractFormParameters($files, $recipients, $params);
 
@@ -193,7 +195,7 @@ class Client
      */
     public function updateBranding($brandingId, array $params)
     {
-        return $this->request('patch', "v3/brandings/$brandingId.json", ['json' => $params ]);
+        return $this->request('patch', "v3/brandings/$brandingId.json", ['json' => $params]);
     }
 
     /**
@@ -206,7 +208,7 @@ class Client
     {
         $params = [];
 
-        $params['limit']  = $limit;
+        $params['limit'] = $limit;
         $params['offset'] = $offset;
 
         return $this->request('get', 'v3/templates.json', ['query' => $params]);
@@ -223,7 +225,7 @@ class Client
     {
         $params = $this->extractQueryParameters($conditions);
 
-        $params['limit']  = $limit;
+        $params['limit'] = $limit;
         $params['offset'] = $offset;
 
         return $this->request('get', 'v3/emails.json', ['query' => $params]);
@@ -262,16 +264,16 @@ class Client
      */
     public function createEmail($files, $recipients, $subject, $body, $params)
     {
-        $recipients      = (array) $recipients;
+        $recipients = (array)$recipients;
 
-        $files           = (array) $files;
+        $files = (array)$files;
 
-        $recipients      = (isset($recipients['to']) || isset($recipients['cc']) || isset($recipients['bcc'])) ?
-            [ $recipients ]
+        $recipients = (isset($recipients['to']) || isset($recipients['cc']) || isset($recipients['bcc'])) ?
+            [$recipients]
             :
             $recipients;
 
-        $multiFormData   = $this->extractFormParameters($files, $recipients, $params);
+        $multiFormData = $this->extractFormParameters($files, $recipients, $params);
 
         $multiFormData[] = ['name' => 'subject', 'contents' => $subject];
         $multiFormData[] = ['name' => 'body', 'contents' => $body];
@@ -306,7 +308,7 @@ class Client
     {
         $params = $this->extractQueryParameters($conditions);
 
-        $params['limit']  = $limit;
+        $params['limit'] = $limit;
         $params['offset'] = $offset;
 
         return $this->request('get', 'v3/sms.json', ['query' => $params]);
@@ -344,16 +346,16 @@ class Client
      */
     public function createSMS($files, $recipients, $body, $params)
     {
-        $recipients      = (array) $recipients;
+        $recipients = (array)$recipients;
 
-        $files           = (array) $files;
+        $files = (array)$files;
 
-        $recipients      = isset($recipients['phone']) ?
-            [ $recipients ]
+        $recipients = isset($recipients['phone']) ?
+            [$recipients]
             :
             $recipients;
 
-        $multiFormData   = $this->extractFormParameters($files, $recipients, $params);
+        $multiFormData = $this->extractFormParameters($files, $recipients, $params);
 
         $multiFormData[] = ['name' => 'body', 'contents' => $body];
 
@@ -387,7 +389,7 @@ class Client
     {
         $params = $this->extractQueryParameters($conditions);
 
-        $params['limit']  = $limit;
+        $params['limit'] = $limit;
         $params['offset'] = $offset;
 
         return $this->request('get', 'v3/team/users.json', ['query' => $params]);
@@ -404,7 +406,7 @@ class Client
     {
         $params = $this->extractQueryParameters($conditions);
 
-        $params['limit']  = $limit;
+        $params['limit'] = $limit;
         $params['offset'] = $offset;
 
         return $this->request('get', 'v3/team/seats.json', ['query' => $params]);
@@ -430,7 +432,7 @@ class Client
     {
         $multiFormData = [
             ['name' => 'email', 'contents' => $email],
-            ['name' => 'role', 'contents' => $role]
+            ['name' => 'role', 'contents' => $role],
         ];
 
         return $this->request('post', 'v3/team/users.json', ['multipart' => $multiFormData]);
@@ -446,7 +448,7 @@ class Client
     public function changeUserRole($userId, $role)
     {
         $data = [
-            'role' => $role
+            'role' => $role,
         ];
 
         return $this->request('patch', "v3/team/users/$userId.json", ['json' => $data]);
@@ -485,7 +487,7 @@ class Client
     {
         $params = $this->extractQueryParameters($conditions);
 
-        $params['limit']  = $limit;
+        $params['limit'] = $limit;
         $params['offset'] = $offset;
 
         return $this->request('get', 'v3/team/groups.json', ['query' => $params]);
@@ -525,7 +527,7 @@ class Client
     public function updateGroup($groupId, $name)
     {
         $data = [
-            'name' => $name
+            'name' => $name,
         ];
 
         return $this->request('patch', "v3/team/groups/$groupId.json", ['json' => $data]);
@@ -597,7 +599,7 @@ class Client
     {
         $params = $this->extractQueryParameters($conditions);
 
-        $params['limit']  = $limit;
+        $params['limit'] = $limit;
         $params['offset'] = $offset;
 
         return $this->request('get', 'v3/contacts.json', ['query' => $params]);
@@ -673,7 +675,7 @@ class Client
     {
         $params = $this->extractQueryParameters($conditions);
 
-        $params['limit']  = $limit;
+        $params['limit'] = $limit;
         $params['offset'] = $offset;
 
         return $this->request('get', 'v3/subscriptions.json', ['query' => $params]);
@@ -796,8 +798,8 @@ class Client
                 $this->fillArray($formArray, $parameters[$key], $parentKey);
             } else {
                 $formArray[] = [
-                    'name'     =>  $parentKey,
-                    'contents' => (string) $value
+                    'name' => $parentKey,
+                    'contents' => (string)$value,
                 ];
             }
         }
@@ -827,9 +829,9 @@ class Client
         }
 
         foreach ($files as $i => $path) {
-            $multiFormData[] =  [
-                'name'     => "files[$i]",
-                'contents' => fopen($path, 'rb')
+            $multiFormData[] = [
+                'name' => "files[$i]",
+                'contents' => fopen($path, 'rb'),
             ];
         }
 
