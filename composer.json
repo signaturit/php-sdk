@@ -14,8 +14,11 @@
         "guzzlehttp/guzzle": "~6.0"
     },
     "autoload" : {
-        "psr-0":  {
-            "Signaturit": "lib/"
+        "psr-4":  {
+            "Signaturit\\": "src/Signaturit/"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
     }
 }
