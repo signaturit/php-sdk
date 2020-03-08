@@ -118,8 +118,8 @@ class Client
     }
 
     /**
-     * @param string|string[] $files
-     * @param string|string[] $recipients
+     * @param string|array $files
+     * @param string|array $recipients
      * @param array $params
      *
      * @return ResponseInterface
