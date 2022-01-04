@@ -14,9 +14,9 @@
         }
     },
     "require": {
-        "php": ">=5.5.0",
+        "php": "^7.2|^8.0",
         "ext-json": "*",
-        "guzzlehttp/guzzle": "~6.0"
+        "guzzlehttp/guzzle": "^7.0"
     },
     "require-dev": {
         "ext-xdebug": ">=2.4.0",

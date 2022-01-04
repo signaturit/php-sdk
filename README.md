@@ -1,14 +1,12 @@
+``` ⚠️ DO NOT USE MASTER BRANCH ⚠️```
+
+# Signaturit PHP SDK
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=signaturit_php-sdk&metric=alert_status&token=4631edd8aae63360c34ad7d3fac8130b18ca0cf4)](https://sonarcloud.io/dashboard?id=signaturit_php-sdk)
 
-========================
-DO NOT USE MASTER BRANCH
-========================
+This package is a PHP wrapper around the Signaturit API. If you didn't read the documentation yet you can take a look [here](https://docs.signaturit.com/).
 
-Signaturit PHP SDK
-=====================
-This package is a PHP wrapper around the Signaturit API. If you didn't read the documentation yet, maybe it's time to take a look [here](https://docs.signaturit.com/).
-
-You'll need at least PHP 5.5 to use this package (http://php.net/supported-versions.php).
+You'll need at least PHP `^7.2` or `^8.0` to use this package (http://php.net/supported-versions.php).
 
 Configuration
 -------------
@@ -327,7 +325,7 @@ $response = $client->getUser('USER_ID');
 ### Invite users to join your team
 
 Invite user to join the team
- 
+
 ```php
 $response = $client->inviteUser('bob.soap@signaturit.com', 'admin');
 ```
@@ -410,7 +408,7 @@ Add a member to a group
 
 ```php
 $response = $client->addMemberToGroup('GROUP_ID', 'USER_ID');
-```                     
+```
 
 ### Delete manager from group
 
