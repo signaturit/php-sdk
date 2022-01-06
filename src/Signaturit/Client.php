@@ -4,7 +4,7 @@ namespace Signaturit;
 
 use Exception;
 use GuzzleHttp\Client as GuzzleClient;
-use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 class Client
 {
@@ -49,7 +49,7 @@ class Client
     /**
      * @param array $conditions
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function countSignatures($conditions = [])
     {
@@ -61,7 +61,7 @@ class Client
     /**
      * @param string $signatureId
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getSignature($signatureId)
     {
@@ -73,7 +73,7 @@ class Client
      * @param int $offset
      * @param array $conditions
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getSignatures($limit = 100, $offset = 0, $conditions = [])
     {
@@ -89,7 +89,7 @@ class Client
      * @param string $signatureId
      * @param string $documentId
      *
-     * @return ResponseInterface
+     * @return StreamInterface
      */
     public function downloadAuditTrail($signatureId, $documentId)
     {
@@ -105,7 +105,7 @@ class Client
      * @param string $signatureId
      * @param string $documentId
      *
-     * @return ResponseInterface
+     * @return StreamInterface
      */
     public function downloadSignedDocument($signatureId, $documentId)
     {
@@ -122,7 +122,7 @@ class Client
      * @param string|array $recipients
      * @param array $params
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function createSignature($files, $recipients, array $params = [])
     {
@@ -142,7 +142,7 @@ class Client
     /**
      * @param string $signatureId
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function cancelSignature($signatureId)
     {
@@ -152,7 +152,7 @@ class Client
     /**
      * @param string $signatureId
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function sendSignatureReminder($signatureId)
     {
@@ -162,7 +162,7 @@ class Client
     /**
      * @param string $brandingId
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getBranding($brandingId)
     {
@@ -170,7 +170,7 @@ class Client
     }
 
     /**
-     * @return ResponseInterface
+     * @return array
      */
     public function getBrandings()
     {
@@ -180,7 +180,7 @@ class Client
     /**
      * @param array $params
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function createBranding(array $params = [])
     {
@@ -191,7 +191,7 @@ class Client
      * @param string $brandingId
      * @param array $params
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function updateBranding($brandingId, array $params)
     {
@@ -202,7 +202,7 @@ class Client
      * @param int $limit
      * @param int $offset
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getTemplates($limit = 100, $offset = 0)
     {
@@ -219,7 +219,7 @@ class Client
      * @param int $offset
      * @param array $conditions
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getEmails($limit = 100, $offset = 0, $conditions = [])
     {
@@ -234,7 +234,7 @@ class Client
     /**
      * @param array $conditions
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function countEmails($conditions = [])
     {
@@ -246,7 +246,7 @@ class Client
     /**
      * @param string $emailId
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getEmail($emailId)
     {
@@ -260,7 +260,7 @@ class Client
      * @param string $body
      * @param array $params
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function createEmail($files, $recipients, $subject, $body, $params)
     {
@@ -285,7 +285,7 @@ class Client
      * @param string $emailId
      * @param string $certificateId
      *
-     * @return ResponseInterface
+     * @return StreamInterface
      */
     public function downloadEmailAuditTrail($emailId, $certificateId)
     {
@@ -302,7 +302,7 @@ class Client
      * @param int $offset
      * @param array $conditions
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getSMS($limit = 100, $offset = 0, $conditions = [])
     {
@@ -317,7 +317,7 @@ class Client
     /**
      * @param array $conditions
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function countSMS($conditions = [])
     {
@@ -329,7 +329,7 @@ class Client
     /**
      * @param $smsId
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getSingleSMS($smsId)
     {
@@ -342,7 +342,7 @@ class Client
      * @param string $body
      * @param array $params
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function createSMS($files, $recipients, $body, $params)
     {
@@ -366,7 +366,7 @@ class Client
      * @param string $smsId
      * @param string $certificateId
      *
-     * @return ResponseInterface
+     * @return StreamInterface
      */
     public function downloadSMSAuditTrail($smsId, $certificateId)
     {
@@ -383,7 +383,7 @@ class Client
      * @param int $offset
      * @param array $conditions
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getUsers($limit = 100, $offset = 0, $conditions = [])
     {
@@ -400,7 +400,7 @@ class Client
      * @param int $offset
      * @param array $conditions
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getSeats($limit = 100, $offset = 0, $conditions = [])
     {
@@ -415,7 +415,7 @@ class Client
     /**
      * @param string $userId
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getUser($userId)
     {
@@ -426,7 +426,7 @@ class Client
      * @param string $email
      * @param string $role
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function inviteUser($email, $role)
     {
@@ -442,7 +442,7 @@ class Client
      * @param string $userId
      * @param string $role
      *
-     * @return ResponseInterface
+     * @return array
      *
      */
     public function changeUserRole($userId, $role)
@@ -457,7 +457,7 @@ class Client
     /**
      * @param string $userId
      *
-     * @return ResponseInterface
+     * @return array
      *
      */
     public function removeUser($userId)
@@ -468,7 +468,7 @@ class Client
     /**
      * @param string $seatId
      *
-     * @return ResponseInterface
+     * @return array
      *
      */
     public function removeSeat($seatId)
@@ -481,7 +481,7 @@ class Client
      * @param int $offset
      * @param array $conditions
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getGroups($limit = 100, $offset = 0, $conditions = [])
     {
@@ -496,7 +496,7 @@ class Client
     /**
      * @param string $groupId
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getGroup($groupId)
     {
@@ -506,7 +506,7 @@ class Client
     /**
      * @param string $name
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function createGroup($name)
     {
@@ -521,7 +521,7 @@ class Client
      * @param string $groupId
      * @param string $name
      *
-     * @return ResponseInterface
+     * @return array
      *
      */
     public function updateGroup($groupId, $name)
@@ -536,7 +536,7 @@ class Client
     /**
      * @param string $groupId
      *
-     * @return ResponseInterface
+     * @return array
      *
      */
     public function deleteGroup($groupId)
@@ -548,7 +548,7 @@ class Client
      * @param string $groupId
      * @param string $userId
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function addManagerToGroup($groupId, $userId)
     {
@@ -559,7 +559,7 @@ class Client
      * @param string $groupId
      * @param string $userId
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function addMemberToGroup($groupId, $userId)
     {
@@ -570,7 +570,7 @@ class Client
      * @param string $groupId
      * @param string $userId
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function removeManagerFromGroup($groupId, $userId)
     {
@@ -581,7 +581,7 @@ class Client
      * @param string $groupId
      * @param string $userId
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function removeMemberFromGroup($groupId, $userId)
     {
@@ -593,7 +593,7 @@ class Client
      * @param int $offset
      * @param array $conditions
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getContacts($limit = 100, $offset = 0, $conditions = [])
     {
@@ -608,7 +608,7 @@ class Client
     /**
      * @param string $contactId
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getContact($contactId)
     {
@@ -619,7 +619,7 @@ class Client
      * @param string $email
      * @param string $name
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function createContact($email, $name)
     {
@@ -636,7 +636,7 @@ class Client
      * @param string $email
      * @param string $name
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function updateContact($contactId, $email, $name)
     {
@@ -656,7 +656,7 @@ class Client
     /**
      * @param string $contactId
      *
-     * @return ResponseInterface
+     * @return array
      *
      */
     public function deleteContact($contactId)
@@ -669,7 +669,7 @@ class Client
      * @param int $offset
      * @param array $conditions
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getSubscriptions($limit = 100, $offset = 0, $conditions = [])
     {
@@ -684,7 +684,7 @@ class Client
     /**
      * @param array $conditions
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function countSubscriptions($conditions = [])
     {
@@ -696,7 +696,7 @@ class Client
     /**
      * @param string $subscriptionId
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function getSubscription($subscriptionId)
     {
@@ -707,7 +707,7 @@ class Client
      * @param string $url
      * @param array $events
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function createSubscription($url, $events)
     {
@@ -724,7 +724,7 @@ class Client
      * @param string $url
      * @param array $events
      *
-     * @return ResponseInterface
+     * @return array
      */
     public function updateSubscription($subscriptionId, $url, $events)
     {
@@ -744,7 +744,7 @@ class Client
     /**
      * @param string $subscriptionId
      *
-     * @return ResponseInterface
+     * @return array
      *
      */
     public function deleteSubscription($subscriptionId)
@@ -846,7 +846,7 @@ class Client
      * @param array $params
      * @param bool $json
      *
-     * @return ResponseInterface
+     * @return StreamInterface|array
      */
     protected function request($method, $path, $params = [], $json = true)
     {
